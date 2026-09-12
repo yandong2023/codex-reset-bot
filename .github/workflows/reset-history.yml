@@ -1,0 +1,43 @@
+name: reset-history
+
+on:
+  schedule:
+    - cron: "0 4 * * *"          # 每天 UTC 04:00（北京时间 12:00）
+  workflow_dispatch:              # 也可手动触发
+
+permissions:
+  contents: write                 # 需要提交 reset-history.json
+
+concurrency:
+  group: reset-history
+  cancel-in-progress: false
+
+jobs:
+  history:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      # 只用标准库，无需 pip install
+      - name: 重建重置历史（翻页抓推文 + LLM 判定 + 中文翻译）
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          HISTORY_OUT: public/reset-history.json
+          HISTORY_PAGES: "12"
+        run: python scripts/build-reset-history.py
+
+      - name: 提交历史变更
+        run: |
+          git config user.email "bot@users.noreply.github.com"
+          git config user.name "codex-reset-bot"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "历史无变化，跳过提交"
+          else
+            git commit -m "chore: rebuild reset history $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            git push
+          fi
