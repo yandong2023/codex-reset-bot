@@ -1,0 +1,10 @@
+name: t4
+on:
+  schedule:
+    - cron: "*/30 * * * *"      # 每 30 分钟
+  workflow_dispatch:            # 也可手动触发
+jobs:
+  m:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo t4
