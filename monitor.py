@@ -12,7 +12,7 @@ Codex 额度重置监控 — 盯着 @thsottiaux (OpenAI Codex 负责人 Tibo Sot
          没有          -> 静默（空 stdout）
          抓取失败      -> stderr + exit 1
 """
-import re, html, json, os, sys, time, urllib.request, urllib.error
+import re, html, json, os, sys, time, subprocess, urllib.request, urllib.error
 
 HOME    = os.path.expanduser("~")
 # 本地跑用 ~/.hermes/...；GitHub Actions 里用环境变量指到仓库内
@@ -33,11 +33,41 @@ def opener():
     return urllib.request.build_opener(urllib.request.ProxyHandler({}))
 
 
-def fetch(url, timeout=30):
-    req = urllib.request.Request(url, headers={"User-Agent": UA,
-                                               "Accept-Language": "en-US,en;q=0.9"})
-    with opener().open(req, timeout=timeout) as r:
-        return r.read().decode("utf-8", "ignore")
+def _curl(url, timeout=90, html=False, ua=None):
+    """用 curl 抓（urllib 会被 jina 403）。
+    ⚠️ 调 jina 时不要伪装 Chrome UA（它在 Cloudflare 后面，会 403 "Just a moment..."）。"""
+    cmd = ["curl", "-sL", "--noproxy", "*", "-m", str(timeout)]
+    if ua:
+        cmd += ["-A", ua]
+    if html:
+        cmd += ["-H", "x-return-format: html"]
+    cmd.append(url)
+    p = subprocess.run(cmd, capture_output=True, timeout=timeout + 30)
+    return p.stdout.decode("utf-8", "ignore")
+
+
+def fetch(url, timeout=90):
+    """⚠️ 2026-09 起 xcancel 加了反爬（返回 "Verifying your browser…" 验证页，
+    直连解析出 0 条推文 → 监控会【静默失效】）。
+    所以：优先走 r.jina.ai，失败再退回直连；且拿不到 timeline 就抛错，不静默。"""
+    last = ""
+    for attempt in range(3):
+        try:
+            d = _curl("https://r.jina.ai/" + url, timeout=timeout, html=True)  # 不带 UA
+            if "timeline-item" in d:
+                return d
+            last = f"jina 无 timeline (len={len(d)})"
+        except Exception as e:
+            last = str(e)[:90]
+        time.sleep(5 * (attempt + 1))
+    try:
+        d = _curl(url, timeout=40, ua=UA)
+        if "timeline-item" in d:
+            return d
+        last += f" / 直连命中反爬验证页 (len={len(d)})"
+    except Exception as e:
+        last += f" / 直连失败: {str(e)[:60]}"
+    raise RuntimeError("抓取失败（反爬或网络）: " + last)
 
 
 def parse_tweets(doc):
