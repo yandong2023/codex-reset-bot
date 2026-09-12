@@ -216,6 +216,27 @@ function xmlReply(to, from, content) {
 </xml>`;
 }
 
+/** 读原始 body —— 微信发的是 text/xml，Vercel 默认不解析，必须自己读流 */
+async function readRawBody(req) {
+  if (typeof req.body === 'string' && req.body.length) return req.body;
+  if (Buffer.isBuffer(req.body)) return req.body.toString('utf8');
+  if (req.body && typeof req.body === 'object') {
+    if (req.body.xml && typeof req.body.xml === 'string') return req.body.xml;
+    if (Object.keys(req.body).length) return JSON.stringify(req.body);
+  }
+  if (!req.on) return '';
+  // 从流里读（加超时防止 body 已被消费时卡死）
+  return await new Promise((resolve) => {
+    let d = '';
+    let done = false;
+    const finish = () => { if (!done) { done = true; resolve(d); } };
+    const timer = setTimeout(finish, 3000);
+    req.on('data', (c) => { d += c; });
+    req.on('end', () => { clearTimeout(timer); finish(); });
+    req.on('error', () => { clearTimeout(timer); finish(); });
+  });
+}
+
 module.exports = async (req, res) => {
   // ① 微信服务器配置校验（一次性）
   if (req.method === 'GET') {
@@ -228,10 +249,7 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).send('method not allowed');
 
   // ② 用户在公众号发消息 -> 回状态
-  let body = '';
-  try {
-    body = typeof req.body === 'string' ? req.body : JSON.stringify(req.body || '');
-  } catch (_) {}
+  const body = await readRawBody(req);
   const g = (tag) => {
     const m = new RegExp(`<${tag}><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>`).exec(body);
     return m ? m[1] : '';
@@ -252,3 +270,6 @@ module.exports = async (req, res) => {
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
   return res.status(200).send(xmlReply(fromUser, toAccount, content));
 };
+
+// 关键：关掉 Vercel 的 body 解析，保证我们能读到微信的原始 XML
+module.exports.config = { api: { bodyParser: false } };
