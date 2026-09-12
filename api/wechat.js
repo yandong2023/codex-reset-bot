@@ -1,20 +1,24 @@
 /**
  * 微信公众号「服务器配置」接口 — Codex 额度重置查询
  *
- * 作用：用户在公众号里发任意消息（或点菜单「Codex 重置了吗」）
- *       → 微信服务器 POST 到这里 → 返回中英双语状态
+ * 用户在公众号发任意消息 → 微信服务器 POST 到这里 → 返回中英双语状态
  *
- * 微信要求：5 秒内响应、GET 做签名校验、返回 XML
+ * 支持三种消息加密模式（自动识别）：
+ *   明文模式  → 收发都是明文 XML
+ *   安全模式  → 收发都是 AES 密文（需配 WECHAT_AES_KEY）
+ *   兼容模式  → 收到密文回密文，收到明文回明文
  *
  * 环境变量（Vercel 后台配）：
- *   WECHAT_TOKEN       必填  与公众号后台「服务器配置」里填的 Token 一致
- *   STATUS_URL         选填  预计算好的 status.json 公网地址（有则秒回，强烈推荐）
- *   DEEPSEEK_API_KEY   选填  没配 STATUS_URL 时用它现场判定
+ *   WECHAT_TOKEN       必填  与公众号后台「服务器配置」的 Token 一致
+ *   WECHAT_AES_KEY     选填  43 位 EncodingAESKey（安全/兼容模式必填）
+ *   STATUS_URL         选填  预计算好的 status.json 地址（有则秒回，强烈推荐）
+ *   DEEPSEEK_API_KEY   选填  没配 STATUS_URL 时现场判定
  *   HANDLE             选填  监控对象，默认 thsottiaux
  */
 const crypto = require('crypto');
 
 const TOKEN = process.env.WECHAT_TOKEN || '';
+const AES_KEY_B64 = process.env.WECHAT_AES_KEY || '';
 const STATUS_URL = process.env.STATUS_URL || '';
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 const HANDLE = process.env.HANDLE || 'thsottiaux';
@@ -22,7 +26,15 @@ const SOURCE = `https://xcancel.com/${HANDLE}`;
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
 
-// 进程内缓存：同一实例 2 分钟内不再重复抓取（避开微信 5s 限制）
+// AES 密钥（43 位 EncodingAESKey -> 32 字节 key，前 16 字节作 iv）
+let AES_KEY = null;
+let AES_IV = null;
+if (AES_KEY_B64 && AES_KEY_B64.length >= 43) {
+  AES_KEY = Buffer.from(AES_KEY_B64.slice(0, 43) + '=', 'base64');
+  AES_IV = AES_KEY.slice(0, 16);
+}
+
+// 进程内缓存：同一实例 2 分钟内不重复抓取（避开微信 5s 限制）
 let CACHE = { at: 0, data: null };
 const CACHE_TTL = 120 * 1000;
 
@@ -33,8 +45,60 @@ function checkSignature(q) {
   const timestamp = q.timestamp || '';
   const nonce = q.nonce || '';
   if (!signature || !timestamp || !nonce) return false;
-  const expect = sha1([TOKEN, timestamp, nonce].sort().join(''));
-  return expect === signature;
+  return sha1([TOKEN, timestamp, nonce].sort().join('')) === signature;
+}
+
+/** 微信密文消息签名：sha1(sort(token, timestamp, nonce, encrypt)) */
+function msgSignature(token, timestamp, nonce, encrypt) {
+  return sha1([token, timestamp, nonce, encrypt].sort().join(''));
+}
+
+function pkcs7Unpad(buf) {
+  const pad = buf[buf.length - 1];
+  if (pad < 1 || pad > 32) return buf;
+  return buf.slice(0, buf.length - pad);
+}
+
+function pkcs7Pad(buf) {
+  const blockSize = 32;
+  const pad = blockSize - (buf.length % blockSize) || blockSize;
+  return Buffer.concat([buf, Buffer.alloc(pad, pad)]);
+}
+
+/** 解密微信消息 -> { xml, appid } */
+function decryptMsg(encryptB64) {
+  const decipher = crypto.createDecipheriv('aes-256-cbc', AES_KEY, AES_IV);
+  decipher.setAutoPadding(false);
+  let dec = Buffer.concat([
+    decipher.update(Buffer.from(encryptB64, 'base64')),
+    decipher.final(),
+  ]);
+  dec = pkcs7Unpad(dec);
+  const msgLen = dec.readUInt32BE(16);          // 前 16 字节随机串，接着 4 字节长度
+  const xml = dec.slice(20, 20 + msgLen).toString('utf8');
+  const appid = dec.slice(20 + msgLen).toString('utf8').replace(/\0/g, '');
+  return { xml, appid };
+}
+
+/** 加密回复内容 -> base64 密文 */
+function encryptMsg(xml, appid) {
+  const rand = crypto.randomBytes(16);
+  const msg = Buffer.from(xml, 'utf8');
+  const lenBuf = Buffer.alloc(4);
+  lenBuf.writeUInt32BE(msg.length, 0);
+  const appidBuf = Buffer.from(appid || '', 'utf8');
+  const raw = pkcs7Pad(Buffer.concat([rand, lenBuf, msg, appidBuf]));
+  const cipher = crypto.createCipheriv('aes-256-cbc', AES_KEY, AES_IV);
+  cipher.setAutoPadding(false);
+  return Buffer.concat([cipher.update(raw), cipher.final()]).toString('base64');
+}
+
+/** 加上 byte-range 保护地取 XML 字段 */
+function pick(xml, tag) {
+  const m = new RegExp(`<${tag}><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>`).exec(xml || '');
+  if (m) return m[1];
+  const m2 = new RegExp(`<${tag}>([\\s\\S]*?)</${tag}>`).exec(xml || '');
+  return m2 ? m2[1] : '';
 }
 
 async function fetchText(url, timeout = 9000) {
@@ -126,21 +190,21 @@ async function classifyTweets(tweets) {
   }
 }
 
-/** DeepSeek 判定 + 中文翻译（单条，保留给其它调用方） */
-async function classify(text) {
-  const v = await classifyTweets([{ text }]);
-  return { is_reset: v.index === 0, zh: v.zh, reason: v.reason };
-}
+// 编译期打包进函数的状态（0 延迟兜底；每次部署时刷新）
+let BUNDLED = null;
+try {
+  BUNDLED = require('../public/status.json');
+} catch (_) {}
 
-/** 拿到状态：优先预计算 JSON（快），否则现场判定（慢但可用） */
+/** 拿到状态：① 预计算 JSON（快） ② 打包状态（0延迟） ③ 现场判定（慢但永远可用） */
 async function getStatus() {
   const now = Date.now();
   if (CACHE.data && now - CACHE.at < CACHE_TTL) return { ...CACHE.data, cached: true };
 
-  // ① 优先：预计算好的 status.json
+  // ① 优先：预计算好的 status.json（STATUS_URL，尽量用 raw GitHub -> 永不过期）
   if (STATUS_URL) {
     try {
-      const txt = await fetchText(STATUS_URL, 4000);
+      const txt = await fetchText(STATUS_URL, 2500);
       const j = JSON.parse(txt);
       if (j && j.last_reset !== undefined) {
         CACHE = { at: now, data: j };
@@ -149,11 +213,17 @@ async function getStatus() {
     } catch (_) {}
   }
 
-  // ② 兜底：现场抓最新几条推文判定（找最近一次真正的重置，而不是只看最新那条）
-  const doc = await fetchText(SOURCE, 8000);
+  // ② 兜底：打包进函数的状态（0 延迟，最多旧到上次部署）
+  if (BUNDLED && BUNDLED.last_reset !== undefined) {
+    CACHE = { at: now, data: BUNDLED };
+    return { ...BUNDLED, cached: false, bundled: true };
+  }
+
+  // ③ 最后兜底：现场抓最新几条推文判定
+  const doc = await fetchText(SOURCE, 6000);
   const tweets = parseTweets(doc, 3);
   if (!tweets.length) throw new Error('未能解析推文');
-  const v = await classifyTweets(tweets);          // 一次调用判定全部（省时）
+  const v = await classifyTweets(tweets);
   const idx = Number.isInteger(v.index) && v.index >= 0 && v.index < tweets.length ? v.index : -1;
   const isReset = idx >= 0;
   const picked = tweets[isReset ? idx : 0];
@@ -216,6 +286,23 @@ function xmlReply(to, from, content) {
 </xml>`;
 }
 
+/** 安全模式回包（外层套 Encrypt + MsgSignature） */
+function xmlReplyEncrypted(plainXml) {
+  const encrypt = encryptMsg(plainXml, APPID_FROM_MSG);
+  const ts = String(Math.floor(Date.now() / 1000));
+  const nonce = crypto.randomBytes(8).toString('hex');
+  const sig = msgSignature(TOKEN, ts, nonce, encrypt);
+  return `<xml>
+<Encrypt><![CDATA[${encrypt}]]></Encrypt>
+<MsgSignature><![CDATA[${sig}]]></MsgSignature>
+<TimeStamp>${ts}</TimeStamp>
+<Nonce><![CDATA[${nonce}]]></Nonce>
+</xml>`;
+}
+
+// 从收到的密文里解出的 appid，回包加密时复用（避免额外配置 AppID）
+let APPID_FROM_MSG = '';
+
 /** 读原始 body —— 微信发的是 text/xml，Vercel 默认不解析，必须自己读流 */
 async function readRawBody(req) {
   if (typeof req.body === 'string' && req.body.length) return req.body;
@@ -225,7 +312,6 @@ async function readRawBody(req) {
     if (Object.keys(req.body).length) return JSON.stringify(req.body);
   }
   if (!req.on) return '';
-  // 从流里读（加超时防止 body 已被消费时卡死）
   return await new Promise((resolve) => {
     let d = '';
     let done = false;
@@ -249,13 +335,31 @@ module.exports = async (req, res) => {
   if (req.method !== 'POST') return res.status(405).send('method not allowed');
 
   // ② 用户在公众号发消息 -> 回状态
-  const body = await readRawBody(req);
-  const g = (tag) => {
-    const m = new RegExp(`<${tag}><!\\[CDATA\\[([\\s\\S]*?)\\]\\]></${tag}>`).exec(body);
-    return m ? m[1] : '';
-  };
-  const fromUser = g('FromUserName');  // 用户 openid
-  const toAccount = g('ToUserName');   // 公众号
+  const raw = await readRawBody(req);
+  const q = req.query || {};
+  let innerXml = raw;
+  let encrypted = false;
+
+  const encryptField = pick(raw, 'Encrypt');
+  if (encryptField && AES_KEY) {
+    // 验签（不一致也继续尝试解密，避免因签名细节差异直接失败）
+    const expect = msgSignature(TOKEN, q.timestamp || '', q.nonce || '', encryptField);
+    if (q.msg_signature && q.msg_signature !== expect) {
+      console.log('[warn] msg_signature mismatch');
+    }
+    try {
+      const dec = decryptMsg(encryptField);
+      innerXml = dec.xml;
+      APPID_FROM_MSG = dec.appid || '';
+      encrypted = true;
+    } catch (e) {
+      console.log('[error] decrypt failed: ' + String(e));
+      return res.status(200).send('');
+    }
+  }
+
+  const fromUser = pick(innerXml, 'FromUserName') || pick(raw, 'FromUserName'); // 用户 openid
+  const toAccount = pick(innerXml, 'ToUserName') || pick(raw, 'ToUserName');   // 公众号
 
   let content;
   try {
@@ -267,8 +371,10 @@ module.exports = async (req, res) => {
       String(e).slice(0, 80) +
       ')';
   }
+
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
-  return res.status(200).send(xmlReply(fromUser, toAccount, content));
+  const plain = xmlReply(fromUser, toAccount, content);
+  return res.status(200).send(encrypted ? xmlReplyEncrypted(plain) : plain);
 };
 
 // 关键：关掉 Vercel 的 body 解析，保证我们能读到微信的原始 XML
