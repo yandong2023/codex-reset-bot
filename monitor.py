@@ -125,7 +125,9 @@ def load_state():
 
 
 def save_json(path, obj):
-    os.makedirs(os.path.dirname(path), exist_ok=True)
+    d = os.path.dirname(path)
+    if d:
+        os.makedirs(d, exist_ok=True)
     json.dump(obj, open(path, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
