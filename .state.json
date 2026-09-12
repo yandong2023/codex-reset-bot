@@ -95,14 +95,22 @@
    "zh": "今天早上出现了一点小插曲：一些已存储的重置（banked resets）在 ChatGPT Work 和 Codex 中使用时没有完全生效。所有在受影响时间窗口内使用过重置的用户都会再获得一次重置，并会收到一封道歉邮件。",
    "reason": "推文说明部分已存储的重置未完全生效，受影响用户将获得额外一次重置补偿。",
    "ts": 1789192672
+  },
+  "2098685367058612394": {
+   "reset": true,
+   "date": "Sep 12, 2026 · 8:09 AM UTC",
+   "link": "https://x.com/thsottiaux/status/2098685367058612394",
+   "zh": "重置已全部生效。好梦。",
+   "reason": "推文明确表示额度重置已全面生效。",
+   "ts": 1789206305
   }
  },
  "last_reset": {
-  "text": "Hi Astra users. A reset and a quick update on quality issues that have been posted around. Working with some of you, we have found and fixed the following issues: - Some skills written for previous models were triggering too often or preventing the model from checking its work. - An opt-in context management experiment that could cause early stops or replies to older messages. We've disabled it. O",
-  "date": "Sep 12, 2026 · 3:20 AM UTC",
-  "link": "https://x.com/thsottiaux/status/2098612714704891959",
-  "zh": "嗨，Astra 用户们。一次重置，以及关于近期被发布出来的质量问题的一个快速更新。通过与你们中的一些人合作，我们发现并修复了以下问题：- 一些为之前模型编写的技能触发得过于频繁，或阻止模型检查自己的工作。- 一个可选择加入的上下文管理实验，可能导致过早停止或回复更早的消息。我们已将其禁用。我们粗略估计约有 4-5k 名用户受到这个实验的影响。- 我们还移除了一些配置不当的引擎，这些引擎导致流经它们的尾部流量出现可测量的质量下降。我们还做了一些较小的改进，整体上应该会感觉明显更好。更一致的后续跟进、更好地追踪你最新的消息，以及在流程推进过程中对工作更好的检查。被发布的示例以及所有直接与我们合作的用户，在帮助快速修复问题方面都非常有用。永远感激这个了不起的社区。当然，一次重置也将在今天午夜前落地。",
-  "reason": "推文明确提到额度重置（a reset）并说明将在今天午夜前落地。",
-  "ts": 1789192672
+  "text": "Reset all propagated. Sweet dreams.",
+  "date": "Sep 12, 2026 · 8:09 AM UTC",
+  "link": "https://x.com/thsottiaux/status/2098685367058612394",
+  "zh": "重置已全部生效。好梦。",
+  "reason": "推文明确表示额度重置已全面生效。",
+  "ts": 1789206305
  }
 }
