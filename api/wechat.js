@@ -256,8 +256,9 @@ function ago(ts) {
 /** 组装中英双语回复 */
 function buildReply(st) {
   const lr = st.last_reset || {};
-  const en = (lr.text || '').slice(0, 180);
-  const zh = (lr.zh || lr.reason || '').slice(0, 260);
+  // 微信被动回复有长度上限，控制总长（中英各截一段）
+  const en = (lr.text || '').slice(0, 110);
+  const zh = (lr.zh || lr.reason || '').slice(0, 150);
   const lines = [];
   lines.push('📊 Codex 额度状态 / Codex Quota Status');
   lines.push('———————————');
@@ -337,6 +338,12 @@ module.exports = async (req, res) => {
   // ② 用户在公众号发消息 -> 回状态
   const raw = await readRawBody(req);
   const q = req.query || {};
+  // 诊断日志：区分「微信来的请求」和「本地自测」（微信会带 msg_signature/encrypt_type）
+  console.log(
+    `[hit] ${req.method} qkeys=${Object.keys(q).sort().join(',')} ` +
+    `encrypt_type=${q.encrypt_type || '-'} msg_sig=${q.msg_signature ? 'yes' : 'no'} ` +
+    `len=${(raw || '').length} ua=${String((req.headers && req.headers['user-agent']) || '-').slice(0, 50)}`
+  );
   let innerXml = raw;
   let encrypted = false;
 
