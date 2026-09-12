@@ -1,0 +1,15 @@
+name: t3
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: g
+  cancel-in-progress: false
+jobs:
+  m:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo t3
