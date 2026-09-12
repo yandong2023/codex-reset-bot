@@ -11,6 +11,7 @@ import re
 import html
 import json
 import os
+import subprocess
 import time
 import datetime
 import urllib.request
@@ -23,11 +24,38 @@ PAGES = int(os.environ.get("HISTORY_PAGES", "12"))
 DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 
 
-def fetch(url, timeout=40):
-    req = urllib.request.Request(url, headers={
-        "User-Agent": UA, "Accept-Language": "en-US,en;q=0.9"})
-    with urllib.request.urlopen(req, timeout=timeout) as r:
-        return r.read().decode("utf-8", "ignore")
+def _curl(url, timeout=90, html=False, ua=None):
+    """用 curl 抓（实测 urllib 会被 jina 403）。
+    ⚠️ 调 jina 时【不要】伪装 Chrome UA —— jina 在 Cloudflare 后面，
+    伪装 UA 会触发 challenge 返回 403 "Just a moment..."。"""
+    cmd = ["curl", "-sL", "--noproxy", "*", "-m", str(timeout)]
+    if ua:
+        cmd += ["-A", ua]
+    if html:
+        cmd += ["-H", "x-return-format: html"]
+    cmd.append(url)
+    p = subprocess.run(cmd, capture_output=True, timeout=timeout + 30)
+    return p.stdout.decode("utf-8", "ignore")
+
+
+def fetch(url, timeout=90):
+    """优先走 r.jina.ai（xcancel 2026-09 起加了反爬验证页，直连拿不到内容）；
+    失败再退回直连。返回 HTML 文本。"""
+    jina = "https://r.jina.ai/" + url
+    last = ""
+    for attempt in range(3):
+        try:
+            d = _curl(jina, timeout=timeout, html=True)   # 不带 UA！
+            if "timeline-item" in d:
+                return d
+            last = f"jina no timeline (len={len(d)})"
+        except Exception as e:
+            last = str(e)[:90]
+        time.sleep(5 * (attempt + 1))          # 退避：jina 免费额度限速
+    try:                                        # 兜底：直连（带浏览器 UA）
+        return _curl(url, timeout=40, ua=UA)
+    except Exception as e:
+        raise RuntimeError(f"{last} / direct: {str(e)[:60]}")
 
 
 def parse(doc):

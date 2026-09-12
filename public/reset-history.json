@@ -1,0 +1,290 @@
+[
+ {
+  "date": "2026-06-04",
+  "link": "https://x.com/thsottiaux/status/2062329981548802523",
+  "ts": 1780532758,
+  "text": "Hi. Over the last 24 hours we had three separate small incidents that affected Codex reliability. Those are three too many and we are taking active steps for them to not reproduce.\n\nI have reset usage limits for Codex across all paid plans. May the tokens flow again.",
+  "type": "standard",
+  "zh": "过去24小时内发生了三起影响Codex可靠性的小事故。这太多了，我们正积极采取措施防止再次发生。我已重置所有付费计划的Codex使用限额。让token再次流动吧。",
+  "utc": "Jun 04, 2026 · 12:25 AM UTC"
+ },
+ {
+  "date": "2026-06-18",
+  "link": "https://x.com/thsottiaux/status/2067399435009622521",
+  "ts": 1781741410,
+  "text": "Dearest gentle codexer.\n\nWe did a sneaky double reset. Not only do you get a full reset on us. But you are also getting one into the reset bank to use at your own leisure. \n\nEnjoy",
+  "type": "standard",
+  "zh": "亲爱的Codex用户们。我们偷偷来了个双重重置。不仅免费送你一次完整重置，还额外存入一次重置额度供你随意使用。尽情享受吧。",
+  "utc": "Jun 18, 2026 · 12:10 AM UTC"
+ },
+ {
+  "date": "2026-06-26",
+  "link": "https://x.com/thsottiaux/status/2070653282440405046",
+  "ts": 1782517188,
+  "text": "We are giving all Codex users a usage reset on the house. Should be showing in your accounts in the next few hours.\n\nWe have applied some mitigations, but our investigation hasn't shown users being impacted at large. We are continuing to monitor the situation.",
+  "type": "standard",
+  "zh": "我们为所有Codex用户免费重置使用限额。几小时内会显示在你的账户中。我们已采取一些缓解措施，但调查未发现用户受到大范围影响。我们会继续监控情况。",
+  "utc": "Jun 26, 2026 · 11:39 PM UTC"
+ },
+ {
+  "date": "2026-06-28",
+  "link": "https://x.com/thsottiaux/status/2071381664853319742",
+  "ts": 1782690847,
+  "text": "As we are still investigating, I have reset everyone's Codex usage limits. This is a hard reset given some users had stacked up to three banked resets already that they can apply on their own schedule.\n\nFunnily enough, this week at OpenAI is called the RESET week, which is meant for folks to relax a bit. However it will be a different kind of RESET week. Enjoy.",
+  "type": "banked",
+  "zh": "由于仍在调查中，我已重置所有人的Codex使用限额。这是一次硬重置，因为有些用户已累积了多达三次可自行安排使用的存储重置。有趣的是，本周在OpenAI被称为重置周，本意是让大家放松一下。不过这将是一个不同寻常的重置周。享受吧。",
+  "utc": "Jun 28, 2026 · 11:54 PM UTC"
+ },
+ {
+  "date": "2026-06-29",
+  "link": "https://x.com/thsottiaux/status/2071740419030053227",
+  "ts": 1782776381,
+  "text": "Codex usage limits will be fully reset again in the next hour and we will credit one additional reset into your bank for your own usage over the next 24 hours.\n\nWe investigated reports that Codex usage was being consumed faster than expected. There wasn't one central issue, but a few smaller problems compounded for some users.   \n\nHere's what we found and changed: \n- Actual usage: Auto-review had become more proactive, another change was triggering more subagent work, and background suggestions could run twice or retry too frequently after failures. We reverted the changes and fixed suggestion scheduling, duplicate generation, and retry behavior. This should reduce unnecessary background token consumption while preserving the work users explicitly request. \n- Usage reporting: Auto-review was incorrectly appearing as GPT‑5.4 usage, and failed or rate-limited requests were still shown as turns. Auto-review now appears as its own category, and only successful requests count toward the turn graphs. Rate-limited requests were never charged, but they were being displayed incorrectly. \n- Immediate relief: We reset usage limits while rolling out the fixes, then shipped hotfixes across the CLI, desktop app, and usage backend. \n- What to expect: New usage data should be clearer and actual consumption should be lower. Historical charts may still show auto-review under GPT‑5.4 because older turn data was not relabeled. Features that intentionally perform more work; such as /goal, subagents, and higher reasoning levels will still naturally use more capacity.  \n\nAll fixes are now deployed, and we've added more detailed monitoring so we can detect background-usage regressions sooner. We'll continue watching the results closely.\n\nThank you for building and doing all sorts of things with Codex.",
+  "type": "standard",
+  "zh": "Codex使用限额将在下一小时内再次完全重置，我们还会额外存入一次重置额度供你在未来24小时内自行使用。我们调查了Codex使用消耗快于预期的报告。没有单一的集中问题，而是几个小问题叠加影响了部分用户。以下是我们发现并做出的改变：- 实际使用：自动审查……",
+  "utc": "Jun 29, 2026 · 11:39 PM UTC"
+ },
+ {
+  "date": "2026-07-09",
+  "link": "https://x.com/thsottiaux/status/2075330198887940337",
+  "ts": 1783632251,
+  "text": "Enjoy a full reset of your usage limits for ChatGPT Work and Codex. Propagating in the next hour.\n\n@_rajanagarwal just joined to work on model research and push on coding capabilities. You can thank him for pressing the button today.",
+  "type": "standard",
+  "zh": "享受ChatGPT Work和Codex使用限额的完整重置。一小时内生效。@_rajanagarwal刚加入负责模型研究并推进编程能力。今天按下按钮的功劳可以归他。",
+  "utc": "Jul 09, 2026 · 09:24 PM UTC"
+ },
+ {
+  "date": "2026-07-10",
+  "link": "https://x.com/thsottiaux/status/2075641131002700120",
+  "ts": 1783706383,
+  "text": "Hello beautiful people! We have reset usage limits across Codex and ChatGPT Work. And another one will come later in the day. Rejoice.\n\nNow that I have your attention, a quick update on ChatGPT Work, Codex and all the updates we shared yesterday.\n\nWe’ve spent the last 24 hours reading feedback, looking at usage patterns, and talking with many of you. The short version is that there is a *lot* of excitement for GPT 5.6 Sol, ChatGPT Work on mobile & web, but also that we didn't get everything quite right.\n\n- We made it too easy to use the highest-compute settings without making the impact on usage limits sufficiently clear.\n- We reorganized the desktop app in one bold move, making familiar things like chats and projects harder to find.\n- Our launch framing was focused on ChatGPT Work and to some of our Codex fans it made it feel like Codex was going away over time. Absolutely not our intention, we love Codex and it is here to stay.\n- And we introduced regressions for some existing multi-agent workflows, alongside a collection of rough edges in plugins and other parts of the experience.\n\nWe’re landing a first set of improvements today. We’re resetting usage twice so people can keep experimenting, changing defaults and the model picker so they don’t push people toward unnecessarily expensive settings, fixing several plugin submission issues, improving how we represent Codex in the product, and cleaning up some of the most immediate desktop problems.\n\nA larger set of improvements will land next week. We’re bringing chats and projects back into the sidebar in a more familiar and customizable way, making usage and reset timing much more visible, clarifying when to use ChatGPT Work and when to use Codex, and addressing the many other smaller pieces of great feedback we've had.\n\nThe ambition behind this launch hasn’t changed. We think bringing ChatGPT and Codex together into a workspace where people and agents can collaborate is a very important step forward. But an ambitious direction doesn’t excuse avoidable confusion or regressions in the first version.\n\nPlease keep the feedback coming. We’re moving quickly, and you should see the experience already get better with a few updates today; and substantially better again next week.",
+  "type": "standard",
+  "zh": "大家好！我们已重置Codex和ChatGPT Work的使用限额。今天晚些时候还会有一次。欢呼吧。既然吸引了你们的注意，快速更新一下ChatGPT Work、Codex以及我们昨天分享的所有更新。过去24小时我们一直在阅读反馈、查看使用模式，并与许多人交流。简而言之，有大量……",
+  "utc": "Jul 10, 2026 · 05:59 PM UTC"
+ },
+ {
+  "date": "2026-07-11",
+  "link": "https://x.com/thsottiaux/status/2075820987833274448",
+  "ts": 1783749265,
+  "text": "Introducing... another usage limit reset for all our ChatGPT Work and Codex users. Should land over next 30 minutes. Hope you have an awesome weekend.\n\nThank you for pushing our systems to the absolute limit, we have never seen traffic increase so quickly. Keep the feedback coming and we'll keep shipping.",
+  "type": "standard",
+  "zh": "隆重推出……又一次为所有ChatGPT Work和Codex用户重置使用限额。30分钟内生效。祝你们周末愉快。感谢你们把我们的系统推到极限，我们从未见过流量增长如此之快。继续反馈，我们继续发布。",
+  "utc": "Jul 11, 2026 · 05:54 AM UTC"
+ },
+ {
+  "date": "2026-07-12",
+  "link": "https://x.com/thsottiaux/status/2076418567143408112",
+  "ts": 1783891739,
+  "text": "Added a banked reset to 500k users of ChatGPT Work and Codex.\n\nWhat’s been happening:\n- Just released the ability to use a banked reset from web and mobile. Before today you could only do it in the desktop app\n- Had an issue where less than 10% of users who used a banked reset and it didn’t actually reset. This was during a 2 hour window.\n- It was hard to find all the exact users where it didn’t apply, so instead granted a banked reset to everyone who pressed the reset button in that 2 hour window. This also gives us the opportunity to validate the new infra ahead of tomorrow\n\nTomorrow we will celebrate our 7M active users milestone and grant the first banked reset across all of our ChatGPT Work and Codex users.\n\nWe will also release a bunch of updates to the desktop app, addressing a ton of your feedback.\n\nTalk soon",
+  "type": "banked",
+  "zh": "为50万ChatGPT Work和Codex用户添加了一次存储重置。近期情况：- 刚发布了从网页和移动端使用存储重置的功能。今天之前只能在桌面应用中使用- 出现了一个问题，不到10%使用存储重置的用户实际并未重置。这发生在一个2小时的窗口内。- 很难找到所有未成功重置的确切用户……",
+  "utc": "Jul 12, 2026 · 09:28 PM UTC"
+ },
+ {
+  "date": "2026-07-13",
+  "link": "https://x.com/thsottiaux/status/2076735790567338203",
+  "ts": 1783967371,
+  "text": "Thank you to the 7M active users who are now using Codex and ChatGPT Work.\n\nWe have added a banked reset to everyone's account to celebrate the milestone. You can apply the reset in the desktop app or on web and it will replenish the weekly usage for you.\n\nHave fun out there.",
+  "type": "banked",
+  "zh": "感谢700万活跃用户现在使用Codex和ChatGPT Work。为庆祝这一里程碑，我们为每个人的账户添加了一次存储重置。你可以在桌面应用或网页上应用重置，它将为你补充每周使用量。玩得开心。",
+  "utc": "Jul 13, 2026 · 06:29 PM UTC"
+ },
+ {
+  "date": "2026-07-14",
+  "link": "https://x.com/thsottiaux/status/2077114635308986427",
+  "ts": 1784057694,
+  "text": "Hello. We have reached 8M active users across Codex and ChatGPT Work.\n\nWe are once again resetting the usage limits for all. And we continue to not have the 5h rate limit as well, allowing everyone to explore the boundaries of GPT-5.6 Sol and discover how ambitious you can be.\n\nSee you tomorrow for more updates on our growth!",
+  "type": "standard",
+  "zh": "大家好。Codex和ChatGPT Work的活跃用户已达800万。我们再次为所有人重置使用限额。而且我们仍然没有5小时速率限制，让每个人都能探索GPT-5.6 Sol的边界，发现你能有多大胆。明天见，带来更多增长更新！",
+  "utc": "Jul 14, 2026 · 07:34 PM UTC"
+ },
+ {
+  "date": "2026-07-16",
+  "link": "https://x.com/thsottiaux/status/2077607697487188198",
+  "ts": 1784175249,
+  "text": "Another reset for our Codex and ChatGPT Work users. Actually hit 9M active users way earlier today, but then got distracted by the approximately millions of things the team is doing to keep the systems up and reliable.\n\nShould have that sweet 100% weekly usage limit back in a few minutes. Go be your productive self and close twitter. Shoo!",
+  "type": "standard",
+  "zh": "又为Codex和ChatGPT Work用户重置了一次。其实今天早些时候就达到了900万活跃用户，但随后被团队为保持系统稳定可靠所做的无数事情分散了注意力。几分钟后你就能拿回100%的每周使用限额。去做个高效的人，关掉推特。走开！",
+  "utc": "Jul 16, 2026 · 04:14 AM UTC"
+ },
+ {
+  "date": "2026-07-18",
+  "link": "https://x.com/thsottiaux/status/2078320950488297917",
+  "ts": 1784345302,
+  "text": "Oops... I did it again. \n\nEnjoy reset usage limits for all paid users for Codex and ChatGPT Work. Super grateful for an incredible team who is iterating at lightspeed and keeping the infra up as we scale faster than ever.\n\nEnjoy the weekend!",
+  "type": "standard",
+  "zh": "哎呀……我又来了。享受Codex和ChatGPT Work所有付费用户的使用限额重置。非常感激一支了不起的团队，他们以光速迭代，在我们以前所未有的速度扩展时保持基础设施运转。周末愉快！",
+  "utc": "Jul 18, 2026 · 03:28 AM UTC"
+ },
+ {
+  "date": "2026-07-21",
+  "link": "https://x.com/thsottiaux/status/2079609157934886975",
+  "ts": 1784652435,
+  "text": "10M! \n\nNew day, new usage reset for paid users of Codex and ChatGPT Work. Lands in the next hour. Enjoy.",
+  "type": "standard",
+  "zh": "1000万！新的一天，为Codex和ChatGPT Work付费用户再次重置使用限额。一小时内生效。享受吧。",
+  "utc": "Jul 21, 2026 · 04:47 PM UTC"
+ },
+ {
+  "date": "2026-07-25",
+  "link": "https://x.com/thsottiaux/status/2081096447718723984",
+  "ts": 1785007032,
+  "text": "We have reset usage limits for all Codex and ChatGPT Work users.\n\nLast night around 2am to 4am we suffered an almost global outage. All well and recovered, but you know what comes next.\n\nWe learn. We reset. Enjoy.",
+  "type": "standard",
+  "zh": "我们已为所有Codex和ChatGPT Work用户重置使用限额。昨晚凌晨2点到4点左右，我们遭遇了一次几乎全球性的故障。一切已恢复，但你知道接下来是什么。我们学习。我们重置。享受吧。",
+  "utc": "Jul 25, 2026 · 07:17 PM UTC"
+ },
+ {
+  "date": "2026-07-28",
+  "link": "https://x.com/thsottiaux/status/2081940052154933696",
+  "ts": 1785208163,
+  "text": "Back at the laptop. The usage limits have been reset for all paid users of Codex and ChatGPT Work. Weeeeeeeee. It's a good day!\n---\nWe’re celebrating the fast adoption of chatGPT Work and all the incredible effort that went into it today. I’m feeling like a limit reset.\n\nHold on tight to your ultra and /fast and see you in a few hours when I’m back at the laptop!",
+  "type": "standard",
+  "zh": "回到电脑前了。所有Codex和ChatGPT Work付费用户的使用限额已重置。耶！今天是个好日子！——我们正在庆祝ChatGPT Work的快速普及以及今天为此付出的所有努力。我想来个限额重置。抓紧你的ultra和/fast，几小时后我回到电脑前再见！",
+  "utc": "Jul 28, 2026 · 03:09 AM UTC"
+ },
+ {
+  "date": "2026-07-29",
+  "link": "https://x.com/thsottiaux/status/2082317452755751098",
+  "ts": 1785298142,
+  "text": "Hello people of Sol! I've reset usage limits for all ChatGPT Work and Codex users. Together with that, a quick update on GPT-5.6 Sol usage limits.\n\nOver the past few weeks, many of you have told us that Sol was using your Codex limits faster than expected. To be clear, we have not reduced usage on any subscription plans.\n\nWe’ve been digging into what was happening and have landed several improvements. As a result, we expect your usage to last around 18% longer during typical use of Sol. Some of you should already see significantly larger improvements from today. Tomorrow, we’ll also restore the five-hour limit that we temporarily paused while investigating.\n\nHere’s what we found:\n- GPT-5.6 Sol is much more willing to work for longer, make additional tool calls, and coordinate complex workflows across tools and subagents. That makes it better at solving hard problems, but some tasks were using far more than we intended.\n- Sol also works harder at the same reasoning effort than previous models. High on Sol can use more tokens than High did on GPT-5.5.\n- Programmatic tool calling, also referred to as code mode, gives Sol much more flexibility to run tool calls in parallel or continue working while waiting. But it also led to more responses per turn, more cached input tokens, and higher usage than expected.\n- This was particularly noticeable when Sol was waiting for tool calls to finish or running many web searches. We’ve improved how we handle both cases and are continuing to make code mode more efficient.\n- The impact was also very uneven. The median user actually found Sol quite token efficient, while some power users working on harder tasks saw their usage drain much faster. We were very focused on average and median usage before launch and missed some cases where the long tail could use significantly more usage.\n\nSol is a significant step forward in what Codex can do, but capability and efficiency do not always improve at the same pace, and some issues only become clear once people are using the model at real-world scale. We should have recognized this sooner and been more upfront about it.\n\nYou keep pushing the frontier and we’ll keep improving efficiency and sharing updates as we go.",
+  "type": "standard",
+  "zh": "Sol的用户们好！我已为所有ChatGPT Work和Codex用户重置使用限额。同时，快速更新一下GPT-5.6 Sol使用限额的情况。过去几周，许多人告诉我们Sol消耗Codex限额的速度快于预期。明确一点，我们没有减少任何订阅计划的使用量。我们一直在深入调查发生了什么，并已落实多项改进……",
+  "utc": "Jul 29, 2026 · 04:09 AM UTC"
+ },
+ {
+  "date": "2026-08-01",
+  "link": "https://x.com/thsottiaux/status/2083395449814229287",
+  "ts": 1785555157,
+  "text": "To celebrate a week of efficiency and let you run 100'000 Luna threads this weekend... that's right... wait for it... I have reset usage limits for Codex and ChatGPT Work.\n\nEnjoy.",
+  "type": "standard",
+  "zh": "为庆祝高效的一周，并让你这个周末运行10万个Luna线程……没错……等等……我已为Codex和ChatGPT Work重置使用限额。享受吧。",
+  "utc": "Aug 01, 2026 · 03:32 AM UTC"
+ },
+ {
+  "date": "2026-08-08",
+  "link": "https://x.com/thsottiaux/status/2086188036493344823",
+  "ts": 1786220962,
+  "text": "That's right, GPT-5.6 Sol is awesome and can be used pretty much anywhere, including in the CC harness. \n\nTo celebrate this, together with the fact that I'm not going anywhere... I have reset usage limits for all paid users of ChatGPT Work and Codex. \n\nHave fun out there!",
+  "type": "standard",
+  "zh": "没错，GPT-5.6 Sol很棒，几乎可以在任何地方使用，包括CC工具链中。为庆祝这一点，加上我哪儿也不去……我已为所有ChatGPT Work和Codex付费用户重置使用限额。玩得开心！",
+  "utc": "Aug 08, 2026 · 08:29 PM UTC"
+ },
+ {
+  "date": "2026-08-11",
+  "link": "https://x.com/thsottiaux/status/2086972933566857393",
+  "ts": 1786408096,
+  "text": "Usage limits have been reset for all paid ChatGPT Work and Codex users. Happy Monday you all. Hope it is a fantastic week.",
+  "type": "standard",
+  "zh": "所有ChatGPT Work和Codex付费用户的使用限额已重置。周一快乐，祝大家有美好的一周。",
+  "utc": "Aug 11, 2026 · 12:28 AM UTC"
+ },
+ {
+  "date": "2026-08-13",
+  "link": "https://x.com/thsottiaux/status/2087706104814023111",
+  "ts": 1786582897,
+  "text": "Old news actually from a bunch of days ago, but crossed that 15M. Enjoy a nice reset everyone. Landing in the next hour or so, go /fast.",
+  "type": "standard",
+  "zh": "其实是几天前的旧消息了，但突破了1500万。大家享受一次愉快的重置吧。一小时内生效，去/fast吧。",
+  "utc": "Aug 13, 2026 · 01:01 AM UTC"
+ },
+ {
+  "date": "2026-08-19",
+  "link": "https://x.com/thsottiaux/status/2089941380336644295",
+  "ts": 1787115828,
+  "text": "I was gifted a very fancy new reset button today",
+  "type": "standard",
+  "zh": "今天我收到了一个非常炫酷的新重置按钮",
+  "utc": "Aug 19, 2026 · 05:03 AM UTC"
+ },
+ {
+  "date": "2026-08-22",
+  "link": "https://x.com/thsottiaux/status/2090964822422949999",
+  "ts": 1787359836,
+  "text": "The banked reset has landed, I repeat, the banked reset has landed. Have an amazing weekend.",
+  "type": "banked",
+  "zh": "存储重置已到账，重复一遍，存储重置已到账。周末愉快。",
+  "utc": "Aug 22, 2026 · 12:50 AM UTC"
+ },
+ {
+  "date": "2026-08-24",
+  "link": "https://x.com/thsottiaux/status/2091688655828246890",
+  "ts": 1787532411,
+  "text": "Good Sunday. Reset has been propagated to accounts and we landed some fixes to usage for things mentioned yesterday as issues we found. You should feel a positive difference. More to come tomorrow and will keep communicating.",
+  "type": "standard",
+  "zh": "周日好。重置已同步到账户，我们还修复了昨天提到的一些使用问题。你应该能感受到积极的改善。明天还有更多，会持续沟通。",
+  "utc": "Aug 24, 2026 · 12:46 AM UTC"
+ },
+ {
+  "date": "2026-08-27",
+  "link": "https://x.com/thsottiaux/status/2093014447833116908",
+  "ts": 1787848505,
+  "text": "Never slept better and feeling reseted. Brand new me and brand new usage for all ChatGPT Work and Codex users. Regaining my youth one button press at a time.\n\nHappy Thursday",
+  "type": "standard",
+  "zh": "从未睡得这么好，感觉焕然一新。全新的我和全新的使用量，献给所有ChatGPT Work和Codex用户。按一次按钮就年轻一次。周四快乐",
+  "utc": "Aug 27, 2026 · 04:35 PM UTC"
+ },
+ {
+  "date": "2026-08-29",
+  "link": "https://x.com/thsottiaux/status/2093801758665715784",
+  "ts": 1788036214,
+  "text": "We are reseting usage for all paid users of Codex and ChatGPT Work.\n\nPlease continue reading for an update on Codex usage limits. The team has been working around the clock, going through thousands of reports and shipping fixes.\n\nDepending on how you use Codex, you should see your usage go between 10% and 50% further than before.\n\nWe really went with a fine comb, with many uncovered small things being longstanding and here is what we found and fixed:\n- Compaction. We were keeping old images during compaction, sometimes making the context large enough to trigger compaction again. After the fix, usage dropped around 10% for users making heavy use of images. Fixed.\n- Memory. Background memory workers could inherit Stop hooks and keep running when the hook wouldn’t let them finish. This affected fewer than 1% of users, with the long tail being pretty bad and we saw one example thread check whether it could stop 15,000 times. Fixed.\n- Goals. In some cases, a set /goal could finish and then keep going past the intended stop condition, or the model would keep retrying broken tools without stopping. We saw examples consume anywhere from 15% to 70% of a weekly allowance. Fixed.\n- Automations. Some custom schedules could run more frequently than configured. Fixed.\n- Subagents. Smaller models (e.g. Luna) sometimes picked more capable helpers without being explicitly asked. The same was true where the orchestrating model not running in /fast mode could request sub-agents to run /fast. Fixed.\n- Computer History. The older implementation could lead to repeatedly summarizing overlapping activity. For some cases we saw it consume up to one fifth of the weekly usage per week. Fixed.\n- Rolling task summaries. Ordinary turns were triggering extra background requests. These added about 1% to token usage. Small each time, but it adds up. We have disabled this.\n- MCP. Some tool results could be encoded twice. We also found tool instructions getting cut off and fetched again. Fixed.\n\nWe’ve also made architectural changes to prevent these from regressing and our teams will get paged if it happens regardless. We are also working on showing you directly in the app where your usage goes so you don’t have to guess.\n\nGoes without saying that we’re resetting usage limits and I hope you enjoy a very nice Saturday!",
+  "type": "standard",
+  "zh": "我们正在为所有Codex和ChatGPT Work付费用户重置使用量。请继续阅读关于Codex使用限额的更新。团队一直在昼夜不停地工作，梳理了数千份报告并发布修复。根据你使用Codex的方式，你的使用量应该比之前多用10%到50%。我们真的用细梳子仔细梳理，发现了许多未被发现的小问题……",
+  "utc": "Aug 29, 2026 · 08:43 PM UTC"
+ },
+ {
+  "date": "2026-08-31",
+  "link": "https://x.com/thsottiaux/status/2094252447271366730",
+  "ts": 1788143667,
+  "text": "What I wanted to say yesterday is that we hit 25M active users and to celebrate we have now reset usage for all paid subscriptions for ChatGPT Work and Codex.\n\nSee you soon for more news from The Reset Company.",
+  "type": "standard",
+  "zh": "我昨天想说的是，我们达到了2500万活跃用户，为庆祝，我们现在已为ChatGPT Work和Codex的所有付费订阅重置了使用量。不久后再见，带来重置公司的更多消息。",
+  "utc": "Aug 31, 2026 · 02:34 AM UTC"
+ },
+ {
+  "date": "2026-09-04",
+  "link": "https://x.com/thsottiaux/status/2095979536043401428",
+  "ts": 1788555437,
+  "text": "Some Plus and Business users won't yet get access to Astra today, we've got you covered with a banked reset. Lands by end of day and if you create your account by 8pm PT then you'll get it too.\n---\nWe will give one banked reset for every day you don't have access to Astra on your paid ChatGPT plan, starting today.  Team is moving mountains to give access as fast as we can.\n\nFirst one will land in ~ 3 hours. There is still time to create your account if you don't have one.",
+  "type": "banked",
+  "zh": "部分Plus和Business用户今天还无法使用Astra，我们为你准备了一次存储重置作为补偿。今天结束前到账，如果你在太平洋时间晚上8点前创建账户，也能获得。——从今天起，你的付费ChatGPT计划每无法使用Astra一天，我们就赠送一次存储重置。团队正在竭尽全力尽快开放访问。第一次将在……",
+  "utc": "Sep 04, 2026 · 08:57 PM UTC"
+ },
+ {
+  "date": "2026-09-05",
+  "link": "https://x.com/thsottiaux/status/2096035437299237298",
+  "ts": 1788568765,
+  "text": "Because we are beyond happy to have Astra rolled out today ahead of schedule and you have been super patient with us (not really, but it’s ok!)… we will do the full banked reset today too for all Plus, Pro and Business users. Lands end of day.\n\nHappy Astra day and enjoy a phenomenal weekend. \n\nPS: If you create the account or upgrade before 8pm PT you will get it too. Still time!",
+  "type": "banked",
+  "zh": "因为我们无比高兴Astra今天提前推出，而且你们一直超级耐心（其实也没有，但没关系！）……我们今天也会为所有Plus、Pro和Business用户进行完整的存储重置。今天结束前到账。Astra日快乐，周末愉快。附：如果你在太平洋时间晚上8点前创建账户或升级，也能获得。还有时间！",
+  "utc": "Sep 05, 2026 · 12:39 AM UTC"
+ },
+ {
+  "date": "2026-09-08",
+  "link": "https://x.com/thsottiaux/status/2097174560412246215",
+  "ts": 1788840353,
+  "text": "All reset for everyone. Enjoy the week with Astra.",
+  "type": "standard",
+  "zh": "所有人都重置了。与Astra共度美好一周。",
+  "utc": "Sep 08, 2026 · 04:05 AM UTC"
+ },
+ {
+  "ts": 1788978180,
+  "utc": "Sep 9, 2026 · 6:23 PM UTC",
+  "text": "There was a bit of a kerfuffle this morning with some banked resets not fully applying when used in ChatGPT Work and Codex. Everyone who used one in the affected time window is getting another one and an email to apologize.",
+  "zh": "今天早上出现了一点小混乱，一些已存储的重置在ChatGPT Work和Codex中使用时未能完全生效。所有在受影响时间段内使用过重置的用户都将再获得一次重置，并收到一封道歉邮件。",
+  "link": "https://x.com/thsottiaux/status/2097752790177370535",
+  "type": "banked",
+  "date": "2026-09-09"
+ },
+ {
+  "ts": 1789200540,
+  "utc": "Sep 12, 2026 · 8:09 AM UTC",
+  "text": "Reset all propagated. Sweet dreams.",
+  "zh": "重置所有已传播的。好梦。",
+  "link": "https://x.com/thsottiaux/status/2098685367058612394",
+  "type": "standard",
+  "date": "2026-09-12"
+ }
+]

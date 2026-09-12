@@ -22,12 +22,22 @@ jobs:
         with:
           python-version: "3.11"
 
-      # 只用标准库，无需 pip install
-      - name: 重建重置历史（翻页抓推文 + LLM 判定 + 中文翻译）
+      # 只用标准库 + curl，无需 pip install
+      # ① 主源：codexresets.com 日历页（历史最全，含原始推文链接）
+      - name: 导入重置历史（日历源）
         env:
           DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
           HISTORY_OUT: public/reset-history.json
-          HISTORY_PAGES: "12"
+        run: python scripts/import-reset-history.py
+
+      # ② 补充：直接抓 @thsottiaux 时间线（抓最新的，可能还没进日历）
+      #    失败不影响整体（历史已由①保证）
+      - name: 增量抓取时间线（补最新重置）
+        continue-on-error: true
+        env:
+          DEEPSEEK_API_KEY: ${{ secrets.DEEPSEEK_API_KEY }}
+          HISTORY_OUT: public/reset-history.json
+          HISTORY_PAGES: "2"
         run: python scripts/build-reset-history.py
 
       - name: 提交历史变更
