@@ -22,6 +22,8 @@ const AES_KEY_B64 = process.env.WECHAT_AES_KEY || '';
 const STATUS_URL = process.env.STATUS_URL || '';
 const DEEPSEEK_API_KEY = process.env.DEEPSEEK_API_KEY || '';
 const HANDLE = process.env.HANDLE || 'thsottiaux';
+// 菜单「商务合作」里返回的微信号（在 Vercel 环境变量 WECHAT_ID 配置，改这个不用改代码）
+const BIZ_ID = process.env.WECHAT_ID || '（请联系管理员）';
 const SOURCE = `https://xcancel.com/${HANDLE}`;
 const UA =
   'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36';
@@ -368,15 +370,45 @@ module.exports = async (req, res) => {
   const fromUser = pick(innerXml, 'FromUserName') || pick(raw, 'FromUserName'); // 用户 openid
   const toAccount = pick(innerXml, 'ToUserName') || pick(raw, 'ToUserName');   // 公众号
 
+  // 识别消息类型：菜单点击事件 / 关注事件 / 普通文本
+  const msgType = (pick(innerXml, 'MsgType') || '').toLowerCase();
+  const event = (pick(innerXml, 'Event') || '').toUpperCase();
+  const eventKey = pick(innerXml, 'EventKey') || '';
+  console.log(`[msg] type=${msgType || '-'} event=${event || '-'} key=${eventKey || '-'}`);
+
   let content;
-  try {
-    const st = await getStatus();
-    content = buildReply(st);
-  } catch (e) {
-    content =
-      '😵 查询失败，请稍后再试\n\nQuery failed, please retry.\n\n(err: ' +
-      String(e).slice(0, 80) +
-      ')';
+  if (msgType === 'event' && event === 'CLICK' && /BIZ/i.test(eventKey)) {
+    // 菜单「商务合作」-> 返回微信号
+    content = [
+      '🤝 商务合作 / Business Inquiries',
+      '———————————',
+      '微信 / WeChat：' + BIZ_ID,
+      '———————————',
+      '添加时请备注来意，谢谢！',
+      'Please mention your purpose when adding. Thanks!',
+    ].join('\n');
+  } else if (msgType === 'event' && event === 'SUBSCRIBE') {
+    // 关注欢迎语
+    content = [
+      '👋 欢迎关注 / Welcome',
+      '———————————',
+      '想查 Codex 额度有没有重置？',
+      '点下方菜单「Codex重置」即可。',
+      '',
+      'Want to check if Codex quota has reset?',
+      'Tap the 「Codex重置」 menu below.',
+    ].join('\n');
+  } else {
+    // 菜单「Codex重置」点击 or 用户直接发任意消息 -> 返回额度状态
+    try {
+      const st = await getStatus();
+      content = buildReply(st);
+    } catch (e) {
+      content =
+        '😵 查询失败，请稍后再试\n\nQuery failed, please retry.\n\n(err: ' +
+        String(e).slice(0, 80) +
+        ')';
+    }
   }
 
   res.setHeader('Content-Type', 'application/xml; charset=utf-8');
