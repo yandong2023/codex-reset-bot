@@ -19,7 +19,8 @@ HOME    = os.path.expanduser("~")
 STATE   = os.environ.get("CODEX_STATE") or os.path.join(HOME, ".hermes", "codex-reset-state.json")
 STATUS  = os.environ.get("CODEX_STATUS") or os.path.join(HOME, ".hermes", "codex-reset-status.json")
 ENV     = os.path.join(HOME, ".hermes", ".env")
-SOURCE  = "https://xcancel.com/thsottiaux"
+SOURCE = "https://xcancel.com/thsottiaux"
+SRC_FALLBACK = "https://codexresets.com"   # 🛟 兜底源（竞品站日历，独立于 xcancel）
 UA      = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
            "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
 FORCE   = "--force" in sys.argv          # 忽略去重，回填判定（用于质量评估 / demo）
@@ -47,27 +48,55 @@ def _curl(url, timeout=90, html=False, ua=None):
 
 
 def fetch(url, timeout=90):
-    """⚠️ 2026-09 起 xcancel 加了反爬（返回 "Verifying your browser…" 验证页，
-    直连解析出 0 条推文 → 监控会【静默失效】）。
-    所以：优先走 r.jina.ai，失败再退回直连；且拿不到 timeline 就抛错，不静默。"""
+    """⚠️ 2026-09 起 xcancel 加了反爬（返回 "Verifying your browser…" 验证页），
+    且 r.jina.ai 会间歇性返回空 / 被限流 → 单通道必然偶发失败。
+    加固：jina 多次退避重试 + 直连多次重试；全部失败才抛错（不静默）。"""
     last = ""
-    for attempt in range(3):
+    # ① jina（html 模式），退避重试
+    for attempt, delay in enumerate([0, 4, 12, 30, 60]):
+        if delay:
+            time.sleep(delay)
         try:
             d = _curl("https://r.jina.ai/" + url, timeout=timeout, html=True)  # 不带 UA
             if "timeline-item" in d:
                 return d
-            last = f"jina 无 timeline (len={len(d)})"
+            last = f"jina#{attempt+1} 无 timeline (len={len(d)})"
         except Exception as e:
-            last = str(e)[:90]
-        time.sleep(5 * (attempt + 1))
-    try:
-        d = _curl(url, timeout=40, ua=UA)
-        if "timeline-item" in d:
-            return d
-        last += f" / 直连命中反爬验证页 (len={len(d)})"
-    except Exception as e:
-        last += f" / 直连失败: {str(e)[:60]}"
+            last = f"jina#{attempt+1} 异常: {str(e)[:60]}"
+    # ② 直连（带 UA），也重试几次（实测直连会间歇性成功）
+    for attempt in range(3):
+        try:
+            d = _curl(url, timeout=45, ua=UA)
+            if "timeline-item" in d:
+                return d
+            last += f" / 直连#{attempt+1} 命中反爬 (len={len(d)})"
+        except Exception as e:
+            last += f" / 直连#{attempt+1} 失败: {str(e)[:50]}"
+        time.sleep(8)
     raise RuntimeError("抓取失败（反爬或网络）: " + last)
+
+
+def fetch_fallback_last_reset():
+    """🛟 兜底源：codexresets.com 日历页（只列【重置事件】，独立于 xcancel）。
+    两个通道都挂时用它，至少不会漏报重置。
+    ⚠️ 坑：页面里的 data-date 是【日历格子的日期】（每天都有一格），
+       取 max 会得到"今天"而不是"最近一次重置" → 必须用推文雪花 ID 反解真实时间。
+    返回 (date_str 'YYYY-MM-DD', tweet_link) 或 None。"""
+    try:
+        d = _curl("https://r.jina.ai/" + SRC_FALLBACK, timeout=90, html=True)
+    except Exception:
+        return None
+    if not d:
+        return None
+    ids = re.findall(r'(?:x|twitter)\.com/thsottiaux/status/([0-9]{15,25})', d)
+    if not ids:
+        return None
+    tid = max(int(i) for i in ids)
+    link = "https://x.com/thsottiaux/status/%d" % tid
+    # 雪花 ID → 毫秒时间戳： (id >> 22) + Twitter epoch
+    ms = (tid >> 22) + 1288834974657
+    dt = time.strftime("%Y-%m-%d", time.gmtime(ms / 1000))
+    return (dt, link)
 
 
 def parse_tweets(doc):
@@ -190,6 +219,36 @@ def main():
     try:
         tweets = parse_tweets(fetch(SOURCE))
     except Exception as e:
+        # 🛟 主通道被反爬/限流挡住时，用兜底源（codexresets.com 日历，只列重置）判最新重置，
+        #    避免「多通道同时挂 → 完全漏报」。用推文 ID 比较（雪花ID 单调递增）。
+        fb = fetch_fallback_last_reset()
+        if fb:
+            _d, fb_link = fb
+            fb_id = 0
+            m = re.search(r"/status/([0-9]+)", fb_link or "")
+            if m:
+                fb_id = int(m.group(1))
+            cur_id = 0
+            m2 = re.search(r"/status/([0-9]+)", (st.get("last_reset") or {}).get("link") or "")
+            if m2:
+                cur_id = int(m2.group(1))
+            if fb_id and fb_id > cur_id:
+                st["last_reset"] = {
+                    "text": "(兜底源 codexresets.com 日历检出)",
+                    "date": _d, "link": fb_link,
+                    "zh": "主监控通道被反爬拦截，本次重置由兜底源检出，请点原链接核对。",
+                    "reason": "fallback_source", "ts": int(time.time()),
+                }
+                save_json(STATE, st)
+                write_status(st, ok=True, err="primary blocked; fallback detected")
+                print("🔔 **Codex 额度重置了 / Codex quota has been RESET**（兜底源检出）")
+                print(f"🕐 {_d}")
+                print(f"🔗 {fb_link}")
+                sys.exit(0)
+            # 兜底源也没有新重置 → 主通道失败但结论不变，不算致命，退出 0 避免误告警
+            write_status(st, ok=True, err="primary blocked (fallback: no new reset)")
+            print(f"[warn] 主通道失败，兜底源无新重置；原因: {str(e)[:160]}", file=sys.stderr)
+            sys.exit(0)
         write_status(st, ok=False, err=str(e)[:200])
         print("⚠️ 抓取失败：" + str(e)[:200], file=sys.stderr)
         sys.exit(1)
