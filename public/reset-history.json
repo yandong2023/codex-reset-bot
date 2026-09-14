@@ -279,6 +279,13 @@
   "date": "2026-09-09"
  },
  {
+  "ts": 1789183200,
+  "utc": "Sep 12, 2026 · 3:20 AM UTC",
+  "text": "Hi Astra users. A reset and a quick update on quality issues that have been posted around. Working with some of you, we have found and fixed the following issues: - Some skills written for previous models were triggering too often or preventing the model from checking its work. - An opt-in context management experiment that could cause early stops or replies to older messages. We've disabled it. Our rough estimate is that 4-5k users were affected by this experiment. - We've also removed some badly configured engines that resulted in a measured quality degradation for a long tail of traffic flowing through them. We’ve also made some more minor improvements and things should feel significantly better across the board. More consistent follow-through, better tracking of your latest message, and better checks on the work as it’s going through the motions. The examples posted and all the users who worked directly with us were incredibly useful in helping fix things quickly. Always grateful for this incredible community. And of course, a reset is also landing by midnight today.",
+  "zh": "Astra用户们好。进行一次重置，并快速更新一下大家提出的质量问题。在与部分用户的合作下，我们发现并修复了以下问题：- 一些为先前模型编写的技能触发了",
+  "link": "https://x.com/thsottiaux/status/2098612714704891959"
+ },
+ {
   "ts": 1789200540,
   "utc": "Sep 12, 2026 · 8:09 AM UTC",
   "text": "Reset all propagated. Sweet dreams.",
