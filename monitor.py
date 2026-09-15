@@ -98,7 +98,13 @@ def fetch_fallback_last_reset():
         return None
     if not d:
         return None
-    ids = re.findall(r'(?:x|twitter)\.com/thsottiaux/status/([0-9]{15,25})', d)
+    ids = []
+    # ✅ 只认「重置日」格子（class 含 cal-day--hit）里的推文链接。
+    # ⚠️ 绝不能抓页面上任意 thsottiaux 链接 —— 页面还嵌了"最新推文"小组件，
+    #    2026-09-15 实际因此误报过一次（把非重置推文当成了重置）。
+    for m in re.finditer(r'<a[^>]*class="[^"]*cal-day--hit[^"]*"', d):
+        seg = d[m.start():m.start() + 1200]        # 该格子的 HTML + 紧随内容
+        ids += re.findall(r'(?:x|twitter)\.com/thsottiaux/status/([0-9]{15,25})', seg)
     if not ids:
         return None
     tid = max(int(i) for i in ids)
