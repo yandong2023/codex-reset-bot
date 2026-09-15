@@ -24,6 +24,7 @@ SRC_FALLBACK = "https://codexresets.com"   # 🛟 兜底源（竞品站日历，
 UA      = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
            "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
 FORCE   = "--force" in sys.argv          # 忽略去重，回填判定（用于质量评估 / demo）
+LAST_DIAG = ""                            # curl 最近一次的退出码/stderr（诊断用）
 STATUS_OUT = None                        # --status-out <path> 可覆盖输出位置
 for i, a in enumerate(sys.argv):
     if a == "--status-out" and i + 1 < len(sys.argv):
@@ -36,44 +37,53 @@ def opener():
 
 def _curl(url, timeout=90, html=False, ua=None):
     """用 curl 抓（urllib 会被 jina 403）。
-    ⚠️ 调 jina 时不要伪装 Chrome UA（它在 Cloudflare 后面，会 403 "Just a moment..."）。"""
-    cmd = ["curl", "-sL", "--noproxy", "*", "-m", str(timeout)]
+    ⚠️ 调 jina 时不要伪装 Chrome UA（它在 Cloudflare 后面，会 403 "Just a moment..."）。
+    ⚠️ 用绝对路径 /usr/bin/curl —— cron 由 launchd 拉起时 PATH 极简，找不到 curl 会静默返回空。"""
+    global LAST_DIAG
+    cmd = ["/usr/bin/curl", "-sL", "--noproxy", "*", "-m", str(timeout)]
     if ua:
         cmd += ["-A", ua]
     if html:
         cmd += ["-H", "x-return-format: html"]
     cmd.append(url)
-    p = subprocess.run(cmd, capture_output=True, timeout=timeout + 30)
+    try:
+        p = subprocess.run(cmd, capture_output=True, timeout=timeout + 30)
+    except Exception as e:
+        LAST_DIAG = "%s:%s" % (type(e).__name__, str(e)[:100])
+        return ""
+    err = p.stderr.decode("utf-8", "ignore").strip()[:160]
+    LAST_DIAG = "rc=%s%s" % (p.returncode, (" err=" + err) if err else "")
     return p.stdout.decode("utf-8", "ignore")
 
 
 def fetch(url, timeout=90):
-    """⚠️ 2026-09 起 xcancel 加了反爬（返回 "Verifying your browser…" 验证页），
-    且 r.jina.ai 会间歇性返回空 / 被限流 → 单通道必然偶发失败。
-    加固：jina 多次退避重试 + 直连多次重试；全部失败才抛错（不静默）。"""
+    """⚠️ 2026-09 起 xcancel 加了反爬 + r.jina.ai 会间歇性限流（返回非 timeline 内容）。
+    实测：云端/本地跑时 **jina 经常先失败、直连反而能通** → 所以
+    【交替尝试】：直连#1 → jina#1 → 直连#2 → jina#2 … 谁先成功用谁，
+    这样正常情况 1 次就通（快），异常时也有足够重试（稳）。
+    全部失败才抛错（绝不静默当成"没有新事件"）。"""
+    global LAST_DIAG
     last = ""
-    # ① jina（html 模式），退避重试
-    for attempt, delay in enumerate([0, 4, 12, 30, 60]):
-        if delay:
-            time.sleep(delay)
-        try:
-            d = _curl("https://r.jina.ai/" + url, timeout=timeout, html=True)  # 不带 UA
-            if "timeline-item" in d:
-                return d
-            last = f"jina#{attempt+1} 无 timeline (len={len(d)})"
-        except Exception as e:
-            last = f"jina#{attempt+1} 异常: {str(e)[:60]}"
-    # ② 直连（带 UA），也重试几次（实测直连会间歇性成功）
-    for attempt in range(3):
+    for rnd in range(3):
+        # 直连（带 UA，xcancel 对直连是间歇性反爬，多试几次常能过）
         try:
             d = _curl(url, timeout=45, ua=UA)
             if "timeline-item" in d:
                 return d
-            last += f" / 直连#{attempt+1} 命中反爬 (len={len(d)})"
+            last += f" / 直连#{rnd+1} len={len(d)}"
         except Exception as e:
-            last += f" / 直连#{attempt+1} 失败: {str(e)[:50]}"
-        time.sleep(8)
-    raise RuntimeError("抓取失败（反爬或网络）: " + last)
+            last += f" / 直连#{rnd+1} 异常:{str(e)[:40]}"
+        # jina 通道（html 模式，不带 UA）
+        try:
+            d = _curl("https://r.jina.ai/" + url, timeout=timeout, html=True)
+            if "timeline-item" in d:
+                return d
+            last += f" / jina#{rnd+1} len={len(d)}"
+        except Exception as e:
+            last += f" / jina#{rnd+1} 异常:{str(e)[:40]}"
+        if rnd < 2:
+            time.sleep(6 * (rnd + 1))
+    raise RuntimeError("抓取失败（反爬或网络）: " + last + " || curl诊断: " + (LAST_DIAG or "无"))
 
 
 def fetch_fallback_last_reset():
@@ -95,8 +105,10 @@ def fetch_fallback_last_reset():
     link = "https://x.com/thsottiaux/status/%d" % tid
     # 雪花 ID → 毫秒时间戳： (id >> 22) + Twitter epoch
     ms = (tid >> 22) + 1288834974657
-    dt = time.strftime("%Y-%m-%d", time.gmtime(ms / 1000))
-    return (dt, link)
+    sec = int(ms / 1000)
+    dt = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(sec))   # 带精确时刻，页面更好看
+    return (dt, link, sec)   # ⚠️ 第三个值是【真实重置时刻】，不是检测时刻
+                             #    —— reset_today 判断靠它，给检测时刻会误报"24h内重置过"
 
 
 def parse_tweets(doc):
@@ -223,7 +235,7 @@ def main():
         #    避免「多通道同时挂 → 完全漏报」。用推文 ID 比较（雪花ID 单调递增）。
         fb = fetch_fallback_last_reset()
         if fb:
-            _d, fb_link = fb
+            _d, fb_link, fb_ts = fb
             fb_id = 0
             m = re.search(r"/status/([0-9]+)", fb_link or "")
             if m:
@@ -237,7 +249,8 @@ def main():
                     "text": "(兜底源 codexresets.com 日历检出)",
                     "date": _d, "link": fb_link,
                     "zh": "主监控通道被反爬拦截，本次重置由兜底源检出，请点原链接核对。",
-                    "reason": "fallback_source", "ts": int(time.time()),
+                    "reason": "fallback_source",
+                    "ts": fb_ts,          # ⚠️ 用【真实重置时刻】，不是检测时刻
                 }
                 save_json(STATE, st)
                 write_status(st, ok=True, err="primary blocked; fallback detected")
