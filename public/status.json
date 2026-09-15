@@ -1,16 +1,16 @@
 {
- "updated_at": "2026-09-15T01:05:47Z",
+ "updated_at": "2026-09-15T02:11:27Z",
  "ok": true,
  "error": "primary blocked (fallback: no new reset)",
- "reset_today": true,
- "last_checked": "2026-09-15T01:05:47Z",
+ "reset_today": false,
+ "last_checked": "2026-09-15T02:11:27Z",
  "last_reset": {
-  "text": "(兜底源 codexresets.com 日历检出)",
-  "date": "2026-09-14",
-  "link": "https://x.com/thsottiaux/status/2099394561076568290",
-  "zh": "主监控通道被反爬拦截，本次重置由兜底源检出，请点原链接核对。",
-  "reason": "fallback_source",
-  "ts": 1789397374
+  "text": "Reset all propagated. Sweet dreams.",
+  "date": "Sep 12, 2026 · 8:09 AM UTC",
+  "link": "https://x.com/thsottiaux/status/2098685367058612394",
+  "zh": "重置已全部生效。好梦。",
+  "reason": "restored_correct",
+  "ts": 1789200557
  },
  "source": "https://xcancel.com/thsottiaux",
  "handle": "@thsottiaux"
