@@ -53,3 +53,4 @@ jobs:
               fi
               echo "第 $i 次推送失败，5 秒后重试"; sleep 5
             done
+          fi
