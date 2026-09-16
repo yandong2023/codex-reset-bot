@@ -39,5 +39,17 @@ jobs:
             echo "状态无变化，跳过提交"
           else
             git commit -m "chore: update codex reset status $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-            git push
-          fi
+            # ⚠️ 2026-09-16 实测坑：人工在本地推送时，这里会撞车被拒
+            #    （! [rejected] master -> master (fetch first)），整个 job 记 failure。
+            #    解法 = 先 rebase 再推；失败则合并（冲突时保留机器人算出的状态）并重试。
+            for i in 1 2 3; do
+              if git pull --rebase --autostash origin "${GITHUB_REF_NAME}" >/dev/null 2>&1; then
+                if git push >/dev/null 2>&1; then echo "✅ 推送成功（第 $i 次）"; break; fi
+              else
+                git rebase --abort >/dev/null 2>&1 || true
+                git merge -X ours origin/"${GITHUB_REF_NAME}" \
+                  -m "merge: keep robot-computed status" >/dev/null 2>&1 || true
+                if git push >/dev/null 2>&1; then echo "✅ 合并后推送成功（第 $i 次）"; break; fi
+              fi
+              echo "第 $i 次推送失败，5 秒后重试"; sleep 5
+            done
