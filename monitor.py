@@ -21,6 +21,9 @@ STATUS  = os.environ.get("CODEX_STATUS") or os.path.join(HOME, ".hermes", "codex
 ENV     = os.path.join(HOME, ".hermes", ".env")
 SOURCE = "https://xcancel.com/thsottiaux"
 SRC_FALLBACK = "https://codexresets.com"   # 🛟 兜底源（竞品站日历，独立于 xcancel）
+FXTWITTER    = "https://api.fxtwitter.com/thsottiaux/status/%d"
+#   🛡️ 独立第三方核对通道：fxtwitter 公开 API（免费、无需鉴权、返回完整推文 JSON）
+#   2026-09-16 实测可用；用途 = 兜底源只给"日期+链接"时把【原文】取回来 + 核对作者
 UA      = ("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 "
            "(KHTML, like Gecko) Chrome/126.0 Safari/537.36")
 FORCE   = "--force" in sys.argv          # 忽略去重，回填判定（用于质量评估 / demo）
@@ -115,6 +118,26 @@ def fetch_fallback_last_reset():
     dt = time.strftime("%Y-%m-%d %H:%M UTC", time.gmtime(sec))   # 带精确时刻，页面更好看
     return (dt, link, sec)   # ⚠️ 第三个值是【真实重置时刻】，不是检测时刻
                              #    —— reset_today 判断靠它，给检测时刻会误报"24h内重置过"
+
+
+def verify_tweet_fxtwitter(tid):
+    """🛡️ 独立第三方核对：fxtwitter 公开 API（免费/无鉴权/返回完整推文 JSON）
+    用途：
+      ① 兜底源只给「日期+链接」→ 用它把【原文】取回来（否则只能写"日历检出"）
+      ② 核对作者确实是 thsottiaux，避免抓到别的东西（误报防线）
+    拿不到就返回 None —— 绝不伪装成成功。"""
+    try:
+        raw = _curl(FXTWITTER % int(tid), timeout=45)
+        j = json.loads(raw)
+        tw = (j or {}).get("tweet") or {}
+        text = (tw.get("text") or tw.get("raw_text") or "").strip()
+        if not text:
+            return None
+        ts = int(tw.get("created_timestamp") or 0) or int(time.time())
+        return {"text": text, "ts": ts,
+                "author": ((tw.get("author") or {}).get("screen_name") or "")}
+    except Exception:
+        return None
 
 
 def parse_tweets(doc):
@@ -251,17 +274,48 @@ def main():
             if m2:
                 cur_id = int(m2.group(1))
             if fb_id and fb_id > cur_id:
-                st["last_reset"] = {
-                    "text": "(兜底源 codexresets.com 日历检出)",
-                    "date": _d, "link": fb_link,
-                    "zh": "主监控通道被反爬拦截，本次重置由兜底源检出，请点原链接核对。",
-                    "reason": "fallback_source",
-                    "ts": fb_ts,          # ⚠️ 用【真实重置时刻】，不是检测时刻
-                }
+                # 🛡️ 先过独立通道核对（2026-09-16 新增）：
+                #    拿回原文 + 确认作者 → 推送能带上真实文案，同时挡住"日历格子有链接"式误报
+                vf = verify_tweet_fxtwitter(fb_id)
+                verdict = None
+                if vf and (vf.get("author") or "").lower() == "thsottiaux":
+                    try:
+                        verdict, _u = classify(vf["text"])
+                    except Exception:
+                        verdict = None
+                if vf and verdict is not None:
+                    if not verdict.get("is_reset"):
+                        # 独立通道拿到原文，但判定【不是重置】→ 不报（宁可静默，不误报）
+                        save_json(STATE, st)
+                        write_status(st, ok=True,
+                                     err="fallback saw new id but fxtwitter text is not a reset")
+                        print("[info] 兜底源出现新 ID，但独立通道原文判定不是重置 → 不报",
+                              file=sys.stderr)
+                        sys.exit(0)
+                    st["last_reset"] = {
+                        "text": vf["text"][:400], "date": _d, "link": fb_link,
+                        "zh": (verdict.get("zh") or "")[:400],
+                        "reason": "fallback_source+verified_fxtwitter",
+                        "ts": vf["ts"] or fb_ts,      # ⚠️ 真实重置时刻
+                    }
+                    tag = "兜底源检出 + 独立通道核对通过"
+                else:
+                    # 独立通道也拿不到 → 保持旧行为（宁可不漏报），但明确标注【未经核对】
+                    st["last_reset"] = {
+                        "text": "(兜底源 codexresets.com 日历检出；独立通道未取到原文)",
+                        "date": _d, "link": fb_link,
+                        "zh": "主监控通道被反爬拦截，且独立核对通道未取到原文，请点原链接核对。",
+                        "reason": "fallback_source_unverified",
+                        "ts": fb_ts,
+                    }
+                    tag = "兜底源检出（未经核对）"
                 save_json(STATE, st)
                 write_status(st, ok=True, err="primary blocked; fallback detected")
-                print("🔔 **Codex 额度重置了 / Codex quota has been RESET**（兜底源检出）")
+                print(f"🔔 **Codex 额度重置了 / Codex quota has been RESET**（{tag}）")
                 print(f"🕐 {_d}")
+                if vf and verdict is not None:
+                    print(f"🇨🇳 {(verdict.get('zh') or '')[:200]}")
+                    print(f"🇬🇧 {vf['text'][:280]}")
                 print(f"🔗 {fb_link}")
                 sys.exit(0)
             # 兜底源也没有新重置 → 主通道失败但结论不变，不算致命，退出 0 避免误告警
