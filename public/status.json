@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-09-16T21:52:09Z",
+ "updated_at": "2026-09-16T23:57:45Z",
  "ok": true,
  "error": "primary blocked (fallback: no new reset)",
  "reset_today": false,
- "last_checked": "2026-09-16T21:52:09Z",
+ "last_checked": "2026-09-16T23:57:45Z",
  "last_reset": {
   "text": "Reset all propagated. Sweet dreams.",
   "date": "Sep 12, 2026 · 8:09 AM UTC",
