@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-09-23T06:56:13Z",
+ "updated_at": "2026-09-23T12:27:51Z",
  "ok": true,
  "error": "primary blocked (fallback: no new reset)",
  "reset_today": true,
- "last_checked": "2026-09-23T06:56:13Z",
+ "last_checked": "2026-09-23T12:27:51Z",
  "last_reset": {
   "text": "GPT-6 Sol and Luna are out. Not only are they a very significant improvement across the board, but also in writing and general \"you know when you try it\" quality. \n\nWe are also permanently reducing the API price by 50% making both of them viable for a ton of new usecases and making your usage go further too, even on the subscriptions.\n\nAnd one more thing. We are loading a banked reset into all acc",
   "date": "2026-09-22 18:23 UTC",
