@@ -1,16 +1,16 @@
 {
- "updated_at": "2026-10-02T20:00:30Z",
+ "updated_at": "2026-10-02T23:53:25Z",
  "ok": true,
- "error": "primary blocked (fallback: no new reset)",
- "reset_today": false,
- "last_checked": "2026-10-02T20:00:30Z",
+ "error": "primary blocked; fallback detected",
+ "reset_today": true,
+ "last_checked": "2026-10-02T23:53:25Z",
  "last_reset": {
-  "text": "Resets all propagated. That will be all. Have a fantastic weekend.",
-  "date": "2026-09-26 18:17 UTC",
-  "link": "https://x.com/thsottiaux/status/2103911959544610829",
-  "zh": "重置已全部下发。就这些。祝大家周末愉快。",
+  "text": "Reset all propagated. Enjoy.",
+  "date": "2026-10-02 21:18 UTC",
+  "link": "https://x.com/thsottiaux/status/2106131810921136451",
+  "zh": "重置已全部生效。尽情享用吧。",
   "reason": "fallback_source+verified_fxtwitter",
-  "ts": 1790446674
+  "ts": 1790975928
  },
  "source": "https://xcancel.com/thsottiaux",
  "handle": "@thsottiaux"
