@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-10-07T09:30:29Z",
+ "updated_at": "2026-10-07T16:49:10Z",
  "ok": true,
- "error": "primary blocked; fallback detected",
+ "error": "primary blocked (fallback: no new reset)",
  "reset_today": true,
- "last_checked": "2026-10-07T09:30:29Z",
+ "last_checked": "2026-10-07T16:49:10Z",
  "last_reset": {
   "text": "We shipped four things that were deemed good to great and some math proofs, but the vote is clear and the community demands a reset. I did calibrate it and it *seems* that the game is rigged in reset's favor, but such are the rules at the moment.\n\nTherefore ... the reset has been processed. Enjoy!",
   "date": "2026-10-07 03:35 UTC",
