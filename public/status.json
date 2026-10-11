@@ -1,16 +1,16 @@
 {
- "updated_at": "2026-10-11T02:01:10Z",
+ "updated_at": "2026-10-11T09:06:23Z",
  "ok": true,
- "error": "primary blocked (fallback: no new reset)",
- "reset_today": false,
- "last_checked": "2026-10-11T02:01:10Z",
+ "error": "primary blocked; fallback detected",
+ "reset_today": true,
+ "last_checked": "2026-10-11T09:06:23Z",
  "last_reset": {
-  "text": "Day 3/\n\nThe big one is GPT-6 in Chat, but today is also a little celebration day with a new high of 40M active users across Codex and ChatGPT Work.\n\nLoading a banked reset in everyone's paid accounts. See you again tomorrow!",
-  "date": "2026-10-07 19:19 UTC",
-  "link": "https://x.com/thsottiaux/status/2107913674593644711",
-  "zh": "第3天/\n\n重头戏是 Chat 中的 GPT-6，但今天也是个小小的庆祝日——Codex 和 ChatGPT Work 的活跃用户数创下 4000 万新高。\n\n正在给每个人的付费账户发放一次已储备的重置。明天见！",
+  "text": "Put the reset in the bag. All propagated.",
+  "date": "2026-10-11 04:01 UTC",
+  "link": "https://x.com/thsottiaux/status/2109132167112782291",
+  "zh": "重置已经到手了。全部已生效。",
   "reason": "fallback_source+verified_fxtwitter",
-  "ts": 1791400757
+  "ts": 1791691269
  },
  "source": "https://xcancel.com/thsottiaux",
  "handle": "@thsottiaux"
