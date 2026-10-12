@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-10-11T23:18:18Z",
+ "updated_at": "2026-10-12T02:31:54Z",
  "ok": true,
  "error": "primary blocked (fallback: no new reset)",
  "reset_today": true,
- "last_checked": "2026-10-11T23:18:18Z",
+ "last_checked": "2026-10-12T02:31:54Z",
  "last_reset": {
   "text": "Put the reset in the bag. All propagated.",
   "date": "2026-10-11 04:01 UTC",
