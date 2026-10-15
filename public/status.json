@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-10-14T22:49:14Z",
+ "updated_at": "2026-10-15T01:04:47Z",
  "ok": true,
  "error": "primary blocked (fallback: no new reset)",
  "reset_today": false,
- "last_checked": "2026-10-14T22:49:14Z",
+ "last_checked": "2026-10-15T01:04:47Z",
  "last_reset": {
   "text": "What would you like with your side of reset? It's done.",
   "date": "2026-10-13 05:06 UTC",
