@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-10-18T06:09:21Z",
+ "updated_at": "2026-10-18T11:27:57Z",
  "ok": true,
  "error": "fallback saw new id but fxtwitter text is not a reset",
  "reset_today": false,
- "last_checked": "2026-10-18T06:09:21Z",
+ "last_checked": "2026-10-18T11:27:57Z",
  "last_reset": {
   "text": "What would you like with your side of reset? It's done.",
   "date": "2026-10-13 05:06 UTC",
