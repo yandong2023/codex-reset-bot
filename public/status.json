@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-10-21T19:46:08Z",
+ "updated_at": "2026-10-21T22:53:23Z",
  "ok": true,
  "error": "primary blocked (fallback: no new reset)",
  "reset_today": false,
- "last_checked": "2026-10-21T19:46:08Z",
+ "last_checked": "2026-10-21T22:53:23Z",
  "last_reset": {
   "text": "Day 15/ Nevermind, we're still cooking... and reset. Enjoy.",
   "date": "2026-10-20 06:33 UTC",
