@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-10-23T17:38:59Z",
+ "updated_at": "2026-10-23T20:46:39Z",
  "ok": true,
- "error": "primary blocked (fallback: no new reset)",
+ "error": "fallback saw new id but fxtwitter text is not a reset",
  "reset_today": false,
- "last_checked": "2026-10-23T17:38:59Z",
+ "last_checked": "2026-10-23T20:46:39Z",
  "last_reset": {
   "text": "Day 15/ Nevermind, we're still cooking... and reset. Enjoy.",
   "date": "2026-10-20 06:33 UTC",
