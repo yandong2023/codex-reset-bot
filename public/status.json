@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-10-25T06:23:55Z",
+ "updated_at": "2026-10-25T11:52:01Z",
  "ok": true,
- "error": "primary blocked; fallback detected",
+ "error": "primary blocked (fallback: no new reset)",
  "reset_today": true,
- "last_checked": "2026-10-25T06:23:55Z",
+ "last_checked": "2026-10-25T11:52:01Z",
  "last_reset": {
   "text": "It is all propagated. Enjoy some mad codexing tomorrow. Fun week ahead too.",
   "date": "2026-10-25 06:06 UTC",
