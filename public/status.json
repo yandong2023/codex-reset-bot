@@ -1,16 +1,16 @@
 {
- "updated_at": "2026-11-13T01:16:46Z",
+ "updated_at": "2026-11-13T08:16:50Z",
  "ok": true,
- "error": "fallback saw new id but fxtwitter text is not a reset",
- "reset_today": false,
- "last_checked": "2026-11-13T01:16:46Z",
+ "error": "primary blocked; fallback detected",
+ "reset_today": true,
+ "last_checked": "2026-11-13T08:16:50Z",
  "last_reset": {
-  "text": "Day 21/ Wonder what happens the remaining seven days. But today is a reset.",
-  "date": "2026-10-26 05:21 UTC",
-  "link": "https://x.com/thsottiaux/status/2114588174249071102",
-  "zh": "第21天/想知道剩下的七天会发生什么。但今天是一次重置。",
+  "text": "We shipped some good updates to dots today and the banked reset has been activated and should land in everyones accounts sometime soon!",
+  "date": "2026-11-12 21:59 UTC",
+  "link": "https://x.com/thsottiaux/status/2120999993079451919",
+  "zh": "我们今天为 dots 发布了一些不错的更新，预留的重置已经激活，应该很快会发放到每个人的账户中！",
   "reason": "fallback_source+verified_fxtwitter",
-  "ts": 1792992082
+  "ts": 1794520779
  },
  "source": "https://xcancel.com/thsottiaux",
  "handle": "@thsottiaux"
