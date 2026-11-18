@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-11-17T17:58:43Z",
+ "updated_at": "2026-11-18T00:33:10Z",
  "ok": true,
  "error": "primary blocked (fallback: no new reset)",
  "reset_today": false,
- "last_checked": "2026-11-17T17:58:43Z",
+ "last_checked": "2026-11-18T00:33:10Z",
  "last_reset": {
   "text": "We shipped some good updates to dots today and the banked reset has been activated and should land in everyones accounts sometime soon!",
   "date": "2026-11-12 21:59 UTC",
