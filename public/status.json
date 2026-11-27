@@ -1,9 +1,9 @@
 {
- "updated_at": "2026-11-27T03:21:58Z",
+ "updated_at": "2026-11-27T12:52:20Z",
  "ok": true,
  "error": "primary blocked (fallback: no new reset)",
- "reset_today": true,
- "last_checked": "2026-11-27T03:21:58Z",
+ "reset_today": false,
+ "last_checked": "2026-11-27T12:52:20Z",
  "last_reset": {
   "text": "Banked reset is online",
   "date": "2026-11-26 07:26 UTC",
